@@ -22,7 +22,7 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     private String username;
 
     @Column(length = 255)
