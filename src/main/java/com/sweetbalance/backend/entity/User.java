@@ -22,8 +22,12 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     private Role role;
 
-    @Column(unique = true, nullable = false, length = 50)
+    // BASIC USER 라면 로그인 ID, OAuth2 USER 라면 Provider ID 에 대응되는 값
+    @Column(unique = true, nullable = false, length = 255)
     private String username;
+
+    @Column(length = 50)
+    private String nickname;
 
     @Column(length = 255)
     private String password;
