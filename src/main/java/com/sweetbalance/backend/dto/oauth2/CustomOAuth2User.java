@@ -38,9 +38,10 @@ public class CustomOAuth2User implements OAuth2User {
         return collection;
     }
 
+    // SecurityContextHolder의 name 값은 username을 뜻함
     @Override
     public String getName() {
-        return authUserDTO.getNickname();
+        return authUserDTO.getUsername();
     }
 
     public String getUsername() {
