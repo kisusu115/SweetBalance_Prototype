@@ -1,6 +1,9 @@
 package com.sweetbalance.backend.util;
 
+import com.sweetbalance.backend.entity.RefreshEntity;
+import com.sweetbalance.backend.repository.RefreshRepository;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +16,15 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
+    private final RefreshRepository refreshRepository;
 
     private final long accessTokenExpirationMs = 3600000L; // 1 hour
     private final long refreshTokenExpirationMs = 3600000L * 24 * 30; // 30 days
 
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
+    @Autowired
+    public JWTUtil(@Value("${spring.jwt.secret}")String secret, RefreshRepository refreshRepository) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.refreshRepository = refreshRepository;
     }
 
     public String getUsername(String token) {
@@ -31,6 +37,10 @@ public class JWTUtil {
 
     public String getUserType(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userType", String.class);
+    }
+
+    public String getTokenType(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("tokenType", String.class);
     }
 
     public Boolean isExpired(String token) {
@@ -61,12 +71,51 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String generateRefreshToken() {
-        return Jwts.builder()
+    public String generateBasicRefreshToken(String username, String role) {
+        String refreshToken = Jwts.builder()
+                .claim("userType", "basic")
                 .claim("tokenType", "refresh")
+                .claim("username", username)
+                .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
                 .signWith(secretKey)
                 .compact();
+        addRefreshEntity(username, refreshToken);
+        return refreshToken;
+    }
+
+    public String generateSocialRefreshToken(String username, String role) {
+        String refreshToken = Jwts.builder()
+                .claim("userType", "basic")
+                .claim("tokenType", "refresh")
+                .claim("username", username)
+                .claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
+                .signWith(secretKey)
+                .compact();
+        addRefreshEntity(username, refreshToken);
+        return refreshToken;
+    }
+
+    public boolean isRefreshExist(String refresh){
+        return refreshRepository.existsByRefresh(refresh);
+    }
+
+    public void deleteRefreshEntity(String refresh){
+        refreshRepository.deleteByRefresh(refresh);
+    }
+
+    private void addRefreshEntity(String username, String refresh) {
+
+        Date date = new Date(System.currentTimeMillis() + refreshTokenExpirationMs);
+
+        RefreshEntity refreshEntity = new RefreshEntity();
+        refreshEntity.setUsername(username);
+        refreshEntity.setRefresh(refresh);
+        refreshEntity.setExpiration(date.toString());
+
+        refreshRepository.save(refreshEntity);
     }
 }

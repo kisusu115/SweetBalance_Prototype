@@ -38,17 +38,17 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.generateSocialAccessToken(username, role);
+        String refreshToken = jwtUtil.generateSocialRefreshToken(username, role);
 
-        // 현재 Bearer 문자열 포함 X
-        response.addCookie(createCookie("Authorization", token));
+        //refresh 토큰 발급을 통해 클라이언트가 reissue 할 수 있도록 함
+        response.addCookie(createCookie("refresh", refreshToken));
         response.sendRedirect("http://localhost:3000/");    // 프론트 측 특정 URL
     }
 
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
+        cookie.setMaxAge(24*60*60);
         //cookie.setSecure(true);   // HTTPS 에서만 쿠키를 사용할 수 있도록 설정
         cookie.setPath("/");        // 쿠키가 보일 위치 설정
         cookie.setHttpOnly(true);   // JavaScript 쿠키 조작 불가능

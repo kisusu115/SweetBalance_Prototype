@@ -1,10 +1,7 @@
 package com.sweetbalance.backend.config;
 
 import com.sweetbalance.backend.service.CustomOAuth2UserService;
-import com.sweetbalance.backend.util.CustomSuccessHandler;
-import com.sweetbalance.backend.util.JWTFilter;
-import com.sweetbalance.backend.util.JWTUtil;
-import com.sweetbalance.backend.util.LoginFilter;
+import com.sweetbalance.backend.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -107,8 +105,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/sign-in").permitAll()
-                        .requestMatchers("/api/sign-up").permitAll()
+                        .requestMatchers("/api/sign-up", "/api/sign-in", "/api/sign-out").permitAll()
+                        .requestMatchers("/api/reissue").permitAll()
 //                        .requestMatchers("/admin").hasRole(ROLE_ADMIN.getValue())
                         .requestMatchers("/api/users/**").hasAnyAuthority(ROLE_ADMIN.getValue(), ROLE_USER.getValue())
                         .anyRequest().authenticated())
@@ -123,6 +121,10 @@ public class SecurityConfig {
         //LoginFilter 추가 - BASIC
         httpSecurity
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        //CustomLogoutFilter 추가
+        httpSecurity
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil), LogoutFilter.class);
 
         //JWTFilter 추가
         httpSecurity
