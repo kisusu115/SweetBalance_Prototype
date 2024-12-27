@@ -9,11 +9,11 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final SocialUserDTO socialUserDTO;
+    private final AuthUserDTO authUserDTO;
 
-    public CustomOAuth2User(SocialUserDTO socialUserDTO) {
+    public CustomOAuth2User(AuthUserDTO authUserDTO) {
 
-        this.socialUserDTO = socialUserDTO;
+        this.authUserDTO = authUserDTO;
     }
 
     // 서드파티별로 Response 구조가 달라 사용 X
@@ -31,7 +31,7 @@ public class CustomOAuth2User implements OAuth2User {
 
             @Override
             public String getAuthority() {
-                return socialUserDTO.getRole();
+                return authUserDTO.getRole();
             }
         });
 
@@ -40,10 +40,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return socialUserDTO.getNickname();
+        return authUserDTO.getNickname();
     }
 
     public String getUsername() {
-        return socialUserDTO.getUsername();
+        return authUserDTO.getUsername();
     }
 }

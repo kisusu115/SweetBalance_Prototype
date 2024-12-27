@@ -18,6 +18,7 @@ public class User extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    // String 타입으로 바꿀지 고민
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

@@ -29,13 +29,30 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
+    public String getUserType(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userType", String.class);
+    }
+
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String generateAccessToken(String username, String role) {
+    public String generateBasicAccessToken(String username, String role) {
         return Jwts.builder()
-                .claim("type", "access")
+                .claim("userType", "basic")
+                .claim("tokenType", "access")
+                .claim("username", username)
+                .claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generateSocialAccessToken(String username, String role) {
+        return Jwts.builder()
+                .claim("userType", "social")
+                .claim("tokenType", "access")
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -46,7 +63,7 @@ public class JWTUtil {
 
     public String generateRefreshToken() {
         return Jwts.builder()
-                .claim("type", "refresh")
+                .claim("tokenType", "refresh")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
                 .signWith(secretKey)

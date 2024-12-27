@@ -38,7 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.generateAccessToken(username, role);
+        String token = jwtUtil.generateSocialAccessToken(username, role);
 
         // 현재 Bearer 문자열 포함 X
         response.addCookie(createCookie("Authorization", token));

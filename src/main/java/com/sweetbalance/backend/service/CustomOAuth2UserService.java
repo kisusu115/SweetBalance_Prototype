@@ -1,11 +1,13 @@
 package com.sweetbalance.backend.service;
 
-import com.sweetbalance.backend.dto.oauth2.SocialUserDTO;
+import com.sweetbalance.backend.dto.oauth2.AuthUserDTO;
 import com.sweetbalance.backend.dto.oauth2.CustomOAuth2User;
 import com.sweetbalance.backend.dto.oauth2.GoogleResponse;
 import com.sweetbalance.backend.dto.oauth2.NaverResponse;
 import com.sweetbalance.backend.dto.oauth2.OAuth2Response;
 import com.sweetbalance.backend.entity.User;
+import com.sweetbalance.backend.enums.common.Status;
+import com.sweetbalance.backend.enums.user.LoginType;
 import com.sweetbalance.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.sweetbalance.backend.enums.common.Status.ACTIVE;
+import static com.sweetbalance.backend.enums.user.LoginType.*;
 import static com.sweetbalance.backend.enums.user.Role.ROLE_USER;
 
 @Service
@@ -32,17 +36,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
-        System.out.println("OAuth2User 내부 값 확인: "+oAuth2User);
+        //System.out.println("OAuth2User 내부 값 확인: "+oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
-        if (registrationId.equals("naver")) {
 
+        LoginType currentLoginType = null;
+        OAuth2Response oAuth2Response = null;
+
+        if (registrationId.equals("naver")) {
+            currentLoginType = NAVER;
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
         }
         else if (registrationId.equals("google")) {
-
+            currentLoginType = GOOGLE;
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         }
         else {
@@ -58,19 +64,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // DB에 존재하지 않는 신규 유저일 때
         if (existData.isEmpty()) {
             User newUser = new User();
+            newUser.setRole(ROLE_USER);
             newUser.setUsername(username);
             newUser.setNickname(oAuth2Response.getName());
             newUser.setEmail(oAuth2Response.getEmail());
-            newUser.setRole(ROLE_USER);
+            newUser.setLoginType(currentLoginType);
+            newUser.setStatus(ACTIVE);
 
             userRepository.save(newUser);
 
-            SocialUserDTO socialUserDTO = new SocialUserDTO();
-            socialUserDTO.setUsername(username);
-            socialUserDTO.setNickname(oAuth2Response.getName());
-            socialUserDTO.setRole(ROLE_USER.getValue());
+            AuthUserDTO authUserDTO = new AuthUserDTO();
+            authUserDTO.setUsername(username);
+            authUserDTO.setNickname(oAuth2Response.getName());
+            authUserDTO.setRole(ROLE_USER.getValue());
 
-            return new CustomOAuth2User(socialUserDTO);
+            return new CustomOAuth2User(authUserDTO);
         }
 
         // DB에 이미 존재하는 유저일 때
@@ -81,12 +89,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             userRepository.save(existUser);
 
-            SocialUserDTO socialUserDTO = new SocialUserDTO();
-            socialUserDTO.setUsername(existUser.getUsername());
-            socialUserDTO.setNickname(oAuth2Response.getName());
-            socialUserDTO.setRole(existUser.getRole().getValue());
+            AuthUserDTO authUserDTO = new AuthUserDTO();
+            authUserDTO.setUsername(existUser.getUsername());
+            authUserDTO.setNickname(oAuth2Response.getName());
+            authUserDTO.setRole(existUser.getRole().getValue());
 
-            return new CustomOAuth2User(socialUserDTO);
+            return new CustomOAuth2User(authUserDTO);
         }
     }
 }

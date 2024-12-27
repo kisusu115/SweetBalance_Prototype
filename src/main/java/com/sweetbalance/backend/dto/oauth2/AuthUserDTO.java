@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class SocialUserDTO {
+public class AuthUserDTO {
 
     private String role;
 
