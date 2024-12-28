@@ -1,10 +1,6 @@
 package com.sweetbalance.backend.service;
 
-import com.sweetbalance.backend.dto.oauth2.AuthUserDTO;
-import com.sweetbalance.backend.dto.oauth2.CustomOAuth2User;
-import com.sweetbalance.backend.dto.oauth2.GoogleResponse;
-import com.sweetbalance.backend.dto.oauth2.NaverResponse;
-import com.sweetbalance.backend.dto.oauth2.OAuth2Response;
+import com.sweetbalance.backend.dto.oauth2.*;
 import com.sweetbalance.backend.entity.User;
 import com.sweetbalance.backend.enums.common.Status;
 import com.sweetbalance.backend.enums.user.LoginType;
@@ -46,6 +42,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (registrationId.equals("naver")) {
             currentLoginType = NAVER;
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+        }
+        else if (registrationId.equals("kakao")) {
+            currentLoginType = KAKAO;
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         }
         else if (registrationId.equals("google")) {
             currentLoginType = GOOGLE;
