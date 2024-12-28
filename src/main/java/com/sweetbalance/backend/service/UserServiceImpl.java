@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     public void join(SignUpDTO signUpDTO){
         // 정규식 처리 등 가입 불가 문자에 대한 처리도 진행해주어야 한다.
         boolean userExists = userRepository.existsByUsername(signUpDTO.getUsername());
-        if(userExists) return;
+        if(userExists) throw new RuntimeException("The username '" + signUpDTO.getUsername() + "' is already taken.");
 
         User bCryptPasswordEncodedUser = makeBCryptPasswordEncodedUser(signUpDTO);
         userRepository.save(bCryptPasswordEncodedUser);
