@@ -38,3 +38,4 @@ out/
 
 ### setting files ###
 application.yml
+chromedriver.exe
