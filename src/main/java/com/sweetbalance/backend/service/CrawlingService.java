@@ -32,7 +32,6 @@ public class CrawlingService {
 //        System.out.println("Test Crawled Data: " + testData);
 
         // 스타벅스 데이터 크롤링 - 크롤링 전용 DTO나 데이터 무결성 검사 등은 구현되지 않음..
-
         List<Beverage> starbucksData = starbucksCrawler.crawlBeverageList();
         for (Beverage newBeverage : starbucksData) {
 
@@ -62,6 +61,7 @@ public class CrawlingService {
         existingBeverage.setSize(newBeverage.getSize());
         existingBeverage.setSugar(newBeverage.getSugar());
         existingBeverage.setCalories(newBeverage.getCalories());
+        existingBeverage.setCaffeine(newBeverage.getCaffeine());
         existingBeverage.setVolume(newBeverage.getVolume());
         existingBeverage.setStatus(newBeverage.getStatus());
     }
