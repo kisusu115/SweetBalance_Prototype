@@ -8,19 +8,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, UserIdHolder {
 
+    private Long userId;
     private String username;
     private String password;
     private String role;
 
     public CustomUserDetails(AuthUserDTO authUserDTO) {
+        this.userId = authUserDTO.getUserId();
         this.username = authUserDTO.getUsername();
         this.password = "TMP_PASSWORD";
         this.role = authUserDTO.getRole();
     }
 
     public CustomUserDetails(User user) {
+        this.userId = user.getUserId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.role = user.getRole().getValue();
@@ -50,6 +53,11 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public Long getUserId(){
+        return userId;
     }
 
     @Override

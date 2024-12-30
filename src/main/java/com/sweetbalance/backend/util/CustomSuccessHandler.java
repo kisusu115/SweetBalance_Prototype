@@ -31,6 +31,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
+        Long userId = customUserDetails.getUserId();
         String username = customUserDetails.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -38,7 +39,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String refreshToken = jwtUtil.generateSocialRefreshToken(username, role);
+        String refreshToken = jwtUtil.generateSocialRefreshToken(userId, username, role);
 
         //refresh 토큰 발급을 통해 클라이언트가 reissue 할 수 있도록 함
         response.addCookie(createCookie("refresh", refreshToken));

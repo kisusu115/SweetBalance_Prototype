@@ -71,9 +71,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setLoginType(currentLoginType);
             newUser.setStatus(ACTIVE);
 
-            userRepository.save(newUser);
+            User createdUser = userRepository.save(newUser);
 
             AuthUserDTO authUserDTO = new AuthUserDTO();
+            authUserDTO.setUserId(createdUser.getUserId());
             authUserDTO.setUsername(username);
             authUserDTO.setNickname(oAuth2Response.getName());
             authUserDTO.setRole(ROLE_USER.getValue());
@@ -90,6 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(existUser);
 
             AuthUserDTO authUserDTO = new AuthUserDTO();
+            authUserDTO.setUserId(existUser.getUserId());
             authUserDTO.setUsername(existUser.getUsername());
             authUserDTO.setNickname(oAuth2Response.getName());
             authUserDTO.setRole(existUser.getRole().getValue());

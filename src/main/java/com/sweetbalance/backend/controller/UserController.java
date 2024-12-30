@@ -1,6 +1,7 @@
 package com.sweetbalance.backend.controller;
 
 import com.sweetbalance.backend.dto.SignUpDTO;
+import com.sweetbalance.backend.dto.UserIdHolder;
 import com.sweetbalance.backend.entity.User;
 import com.sweetbalance.backend.entity.Beverage;
 import com.sweetbalance.backend.service.UserService;
@@ -27,8 +28,8 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<User> findUserById(@PathVariable("userId") Long userId) {
         // 아래 로직을 통해 토큰의 username 값을 Controller 로직에서 가져올 수 있음. role 값도 가능
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(name+" requested "+userId+"'s INFO");
+        UserIdHolder userIdHolder = (UserIdHolder) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(userIdHolder.getUserId()+" requested "+userId+"'s INFO");
 
         Optional<User> userOptional = userService.findUserByUserId(userId);
 

@@ -27,6 +27,11 @@ public class JWTUtil {
         this.refreshRepository = refreshRepository;
     }
 
+    public Long getUserId(String token) {
+        String rawUserId = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sub", String.class);
+        return Long.valueOf(rawUserId);
+    }
+
     public String getUsername(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
@@ -47,8 +52,9 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String generateBasicAccessToken(String username, String role) {
+    public String generateBasicAccessToken(Long userId, String username, String role) {
         return Jwts.builder()
+                .claim("sub", userId.toString())
                 .claim("userType", "basic")
                 .claim("tokenType", "access")
                 .claim("username", username)
@@ -59,8 +65,9 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String generateSocialAccessToken(String username, String role) {
+    public String generateSocialAccessToken(Long userId, String username, String role) {
         return Jwts.builder()
+                .claim("sub", userId.toString())
                 .claim("userType", "social")
                 .claim("tokenType", "access")
                 .claim("username", username)
@@ -71,8 +78,9 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String generateBasicRefreshToken(String username, String role) {
+    public String generateBasicRefreshToken(Long userId, String username, String role) {
         String refreshToken = Jwts.builder()
+                .claim("sub", userId.toString())
                 .claim("userType", "basic")
                 .claim("tokenType", "refresh")
                 .claim("username", username)
@@ -85,8 +93,9 @@ public class JWTUtil {
         return refreshToken;
     }
 
-    public String generateSocialRefreshToken(String username, String role) {
+    public String generateSocialRefreshToken(Long userId, String username, String role) {
         String refreshToken = Jwts.builder()
+                .claim("sub", userId.toString())
                 .claim("userType", "basic")
                 .claim("tokenType", "refresh")
                 .claim("username", username)

@@ -1,5 +1,6 @@
 package com.sweetbalance.backend.dto.oauth2;
 
+import com.sweetbalance.backend.dto.UserIdHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -7,12 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class CustomOAuth2User implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User, UserIdHolder {
 
     private final AuthUserDTO authUserDTO;
 
     public CustomOAuth2User(AuthUserDTO authUserDTO) {
-
         this.authUserDTO = authUserDTO;
     }
 
@@ -42,6 +42,11 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public String getName() {
         return authUserDTO.getUsername();
+    }
+
+    @Override
+    public Long getUserId() {
+        return authUserDTO.getUserId();
     }
 
     public String getUsername() {

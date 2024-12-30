@@ -61,6 +61,7 @@ public class ReissueController {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
+        Long userId = jwtUtil.getUserId(refresh);
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
@@ -69,12 +70,12 @@ public class ReissueController {
         String newRefreshToken = null;
 
         if(userType.equals("basic")){
-            newAccessToken = jwtUtil.generateBasicAccessToken(username, role);
-            newRefreshToken = jwtUtil.generateBasicRefreshToken(username, role);
+            newAccessToken = jwtUtil.generateBasicAccessToken(userId, username, role);
+            newRefreshToken = jwtUtil.generateBasicRefreshToken(userId, username, role);
         }
         if(userType.equals("social")){
-            newAccessToken = jwtUtil.generateSocialAccessToken(username, role);
-            newRefreshToken = jwtUtil.generateSocialRefreshToken(username, role);
+            newAccessToken = jwtUtil.generateSocialAccessToken(userId, username, role);
+            newRefreshToken = jwtUtil.generateSocialRefreshToken(userId, username, role);
         }
         jwtUtil.deleteRefreshEntity(refresh);
 
