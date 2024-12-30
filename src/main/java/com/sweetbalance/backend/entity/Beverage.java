@@ -29,11 +29,18 @@ public class Beverage extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private BeverageSize size;
 
+    /*
+     * 음료 영양정보의 경우 소수점을 포함 할 수 있기에 long 타입으로 자료형 변환 고려
+     */
+    
     @Column(nullable = false)
     private int sugar;
 
     @Column(nullable = false)
     private int calories;
+
+    @Column(nullable = false)
+    private int caffeine;
 
     @Column(nullable = false)
     private int volume;

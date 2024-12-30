@@ -1,5 +1,6 @@
 package com.sweetbalance.backend.crawler;
 
+import com.sweetbalance.backend.entity.Beverage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,10 +22,14 @@ public class TestCrawler extends BaseCrawler{
         super(driver);
     }
 
+    public List<String> crawlTest() {
+        // return crawlCertainBeverage();
+        return crawlCategories();
+    }
+
     @Override
-    public List<String> crawl() {
-        return crawlCertainBeverage();
-//        return crawlCategories();
+    public List<Beverage> crawlBeverageList() {
+        return null;
     }
 
     /*
@@ -35,7 +40,6 @@ public class TestCrawler extends BaseCrawler{
 
     // 바닐라크림 콜드브루 영양정보 추출 예시 코드 (동적 element)
     private List<String> crawlCertainBeverage(){
-
         String BASE_URL = "https://www.starbucks.co.kr/menu/drink_list.do";
 
         List<String> results = new ArrayList<>();

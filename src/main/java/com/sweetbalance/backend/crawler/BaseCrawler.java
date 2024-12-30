@@ -1,5 +1,6 @@
 package com.sweetbalance.backend.crawler;
 
+import com.sweetbalance.backend.entity.Beverage;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,8 +15,7 @@ public abstract class BaseCrawler {
         this.driver = driver;
     }
 
-    // 크롤링 로직을 구현하기 위한 추상 메서드 - 반환 값은 로직 구현에 따라 변경요함
-    public abstract List<String> crawl();
+    public abstract List<Beverage> crawlBeverageList();
 
     // 페이지 이동 공통 메서드
     protected void navigateTo(String url) {
